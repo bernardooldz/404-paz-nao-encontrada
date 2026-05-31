@@ -10,40 +10,22 @@ A proposta deve apresentar uma ideia simples, clara e viável para ser desenvolv
 
 ## 2. Integrantes do grupo
 
-Liste os integrantes do grupo.
-
 - Nome 1: Bernardo Diniz
 - Nome 2: Daniel Heber de Souza Godinho
 
 ## 3. Tipo de jogo
 
-Indique o tipo de jogo que será desenvolvido.
-
-Tipo escolhido pelo grupo:
-
 Nave desviando de meteoros
 
 ## 4. Descrição geral do jogo
-
-Explique, em poucas linhas, como o jogo funcionará.
-
-Descrição:
 
 O jogo "404: Paz Não Encontrada" é um jogo de sobrevivência com temática de programação. O jogador controla um desenvolvedor que tenta encontrar alguns momentos de paz após um longo dia de trabalho. Durante a partida, diversos obstáculos relacionados ao cotidiano da programação caem pela tela, como bugs, erros de sintaxe, conflitos de merge e deadlines. O objetivo é desviar desses obstáculos, coletar itens úteis e sobreviver o maior tempo possível.
 
 ## 5. Objetivo do jogador
 
-Explique qual é o objetivo principal do jogador.
-
-Objetivo:
-
 Sobreviver o maior tempo possível, desviando dos obstáculos e acumulando pontos. O jogador deverá alcançar uma pontuação superior ao seu último recorde para finalmente encontrar a paz e concluir o jogo.
 
 ## 6. Regras principais
-
-Liste as principais regras do jogo.
-
-Regras do grupo:
 
 - Regra 1: O jogador inicia a partida com 3 vidas.
 - Regra 2: Cada obstáculo atingido remove 1 vida.
@@ -53,53 +35,31 @@ Regras do grupo:
 
 ## 7. Condição de vitória
 
-Explique como o jogador vence ou conclui o jogo.
-
-Condição de vitória:
-
 O jogador vence ao atingir uma pontuação superior ao seu último recorde, representando o momento em que finalmente encontra a paz. Ao vencer, será exibida uma mensagem indicando "200 OK: Paz Encontrada".
 
 ## 8. Condição de derrota ou encerramento
-
-Explique como o jogador perde ou quando a partida termina.
-
-Condição de derrota ou encerramento:
 
 A partida termina quando o jogador perde todas as suas vidas ao colidir com obstáculos. Nesse momento será exibida a mensagem "404: Paz Não Encontrada".
 
 ## 9. Elementos previstos no jogo
 
-Descreva os principais elementos que farão parte do jogo.
-
 ## Jogador ou elemento principal
-
-Descrição:
 
 Um desenvolvedor representado por um personagem simples controlado pelo teclado, que pode se mover horizontalmente pela tela.
 
 ## Obstáculos, inimigos ou desafios
 
-Descrição:
-
 Bugs, erros de sintaxe, conflitos de merge, reuniões inesperadas e deadlines aparecerão aleatoriamente e deverão ser evitados.
 
 ## Itens, alvos ou objetos de interação
-
-Descrição:
 
 Itens especiais como café, testes automatizados e ChatGPT poderão aparecer durante a partida oferecendo benefícios ao jogador.
 
 ## Pontuação, vidas, tempo ou progresso
 
-Descrição:
-
 O jogador começa com 3 vidas. A pontuação aumenta conforme o tempo de sobrevivência e pela coleta de itens especiais. O progresso é medido pela quantidade de pontos acumulados até atingir uma pontuação superior ao seu último recorde.
 
 ## 10. Controles previstos
-
-Informe os comandos que serão utilizados pelo jogador.
-
-Controles do grupo:
 
 - Seta para esquerda ou a tecla "a": mover para a esquerda
 - Seta para direita ou a tecla "d": mover para a direita
@@ -107,10 +67,6 @@ Controles do grupo:
 - ESC: sair do jogo
 
 ## 11. Organização inicial do código
-
-Explique como o grupo pretende organizar o código.
-
-Organização planejada:
 
 - `main.py`: inicia o jogo;
 - `src/jogo.py`: contém o loop principal;
@@ -120,19 +76,11 @@ Organização planejada:
 
 ## 12. Recursos externos previstos
 
-Informe se o grupo pretende utilizar imagens, sons, fontes, tutoriais ou códigos externos.
-
-Recursos previstos:
-
 - imagens obtidas de banco gratuito;
 - sons gratuitos;
 - fonte personalizada.
 
 ## 13. Principais dificuldades esperadas
-
-Liste as dificuldades que o grupo acredita que poderá enfrentar.
-
-Dificuldades previstas:
 
 - Dificuldade 1: Implementação do sistema de colisão entre jogador e obstáculos.
 - Dificuldade 2: Criação do sistema de geração aleatória de obstáculos e itens.
@@ -140,19 +88,9 @@ Dificuldades previstas:
 
 ## 14. Escopo mínimo para a entrega final
 
-Descreva qual será a versão mínima aceitável do jogo.
-
-Esta seção é importante para evitar que o grupo escolha uma ideia grande demais.
-
-Escopo mínimo:
-
 A versão mínima do jogo terá um personagem controlado pelo teclado, obstáculos surgindo aleatoriamente, sistema de vidas, sistema de pontuação, tela de vitória ao alcançar uma pontuação superior ao seu último recorde e tela de derrota quando as vidas chegarem a zero.
 
 ## 15. Possíveis melhorias, caso haja tempo
-
-Liste funcionalidades extras que o grupo poderá implementar se conseguir concluir o escopo mínimo.
-
-Melhorias possíveis:
 
 - Melhoria 1: Aumento gradual da dificuldade com obstáculos mais rápidos conforme a pontuação aumenta.
 - Melhoria 2: Implementação de itens especiais com efeitos temporários, como invencibilidade por alguns segundos ou redução da velocidade dos obstáculos.
