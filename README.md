@@ -1,20 +1,19 @@
-# Nome do Jogo
+# 404: Paz Não Encontrada
 
 Projeto final da disciplina de Introdução a Algoritmos/Programação, desenvolvido com Python e Pygame.
 
-Este repositório é um template para os grupos da disciplina. A proposta é começar com uma base funcional e evoluir o jogo ao longo do semestre.
+Este repositório contém a base do jogo "404: Paz Não Encontrada" — um projeto do grupo para a disciplina. A proposta está em `docs/proposta.MD` e o README abaixo resume a ideia e o escopo planejado, sem afirmar implementações não concluídas.
 
 ## Integrantes do grupo
 
-- Nome do integrante 1
-- Nome do integrante 2
-- Nome do integrante 3
-- Nome do integrante 4
+- Bernardo Lopes Diniz
+- Daniel Heber de Souza Godinho
 
 ## Estrutura do projeto
 
 - `main.py`: ponto de entrada da aplicação.
 - `src/`: código-fonte principal do jogo (loop, regras, sprites e dados).
+	- Arquivos previstos: `src/jogo.py`, `src/config.py`, `src/funcoes.py`, `src/dados.py`, `src/sprites.py`.
 - `assets/`: imagens, fontes e sons.
 - `data/`: arquivos persistentes (recorde/ranking).
 - `tests/`: testes unitários com `pytest`.
@@ -22,43 +21,28 @@ Este repositório é um template para os grupos da disciplina. A proposta é com
 
 ## Descrição do jogo
 
-Descreva brevemente a ideia principal do jogo.
-
-Exemplo:
-
-> O jogo consiste em controlar um personagem que deve coletar moedas e evitar obstáculos. O jogador ganha pontos ao coletar itens e perde vidas ao colidir com obstáculos. A partida termina quando o tempo acaba ou quando o jogador perde todas as vidas.
+"404: Paz Não Encontrada" é um jogo de sobrevivência com temática de programação. O jogador controla um desenvolvedor que tenta encontrar momentos de paz após um longo dia de trabalho. Obstáculos relacionados ao cotidiano da programação (bugs, erros de sintaxe, conflitos de merge, deadlines, etc.) aparecem na tela e devem ser evitados. Itens especiais (ex.: café, testes automatizados) podem ser coletados para obter benefícios.
 
 ## Objetivo do jogador
 
-Explique o que o jogador precisa fazer para vencer ou avançar no jogo.
-
-Exemplo:
-
-> O objetivo é coletar a maior quantidade possível de itens antes que o tempo acabe, evitando colisões com os obstáculos.
+Sobreviver o maior tempo possível, desviando dos obstáculos e acumulando pontos. O jogador deve tentar superar seu recorde anterior para alcançar a condição de vitória prevista na proposta.
 
 ## Regras do jogo
 
-Liste as principais regras do jogo.
-
-Exemplo:
-
-- O jogador se movimenta usando as setas do teclado.
-- Cada item coletado aumenta a pontuação.
-- Colidir com um obstáculo reduz a quantidade de vidas.
-- A partida termina quando o jogador perde todas as vidas ou quando o tempo acaba.
+- O jogador inicia a partida com 3 vidas.
+- Cada colisão com um obstáculo remove 1 vida.
+- Itens especiais podem conceder pontos extras ou recuperar vidas.
+- A pontuação aumenta com o tempo de sobrevivência e pela coleta de itens especiais.
+- A partida termina quando as vidas chegam a zero.
 
 ## Controles
 
-Informe as teclas ou comandos utilizados no jogo.
+- Seta para esquerda ou tecla `a`: mover para a esquerda
+- Seta para direita ou tecla `d`: mover para a direita
+- Espaço: iniciar/reiniciar a partida
+- `ESC`: sair do jogo
 
-Exemplo:
-
-- Seta para cima: mover para cima
-- Seta para baixo: mover para baixo
-- Seta para esquerda: mover para esquerda
-- Seta para direita: mover para direita
-- Espaço: realizar ação
-- ESC: sair do jogo
+> Observação: estes controles fazem parte do escopo mínimo planejado; ajustes podem ocorrer durante a implementação.
 
 ## Como executar o projeto
 
