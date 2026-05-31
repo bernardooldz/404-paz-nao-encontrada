@@ -10,14 +10,14 @@ Escreva aqui o nome provisório do jogo.
 
 Exemplo:
 
-> Corrida dos Obstáculos
+> 404: Paz Não Encontrada
 
 ## 2. Integrantes do grupo
 
 Liste os integrantes do grupo.
 
-- Nome 1:
-- Nome 2:
+- Nome 1: Bernardo Diniz
+- Nome 2: Daniel Heber de Souza Godinho
 - Nome 3:
 - Nome 4:
 
@@ -42,7 +42,7 @@ Exemplos:
 
 Tipo escolhido pelo grupo:
 
-> Escreva aqui.
+> Nave desviando de meteoros
 
 ## 4. Descrição geral do jogo
 
@@ -57,7 +57,7 @@ Procure responder:
 
 Descrição:
 
-> Escreva aqui.
+> O jogo "404: Paz Não Encontrada" é um jogo de sobrevivência com temática de programação. O jogador controla um desenvolvedor que tenta encontrar alguns momentos de paz após um longo dia de trabalho. Durante a partida, diversos obstáculos relacionados ao cotidiano da programação caem pela tela, como bugs, erros de sintaxe, conflitos de merge e deadlines. O objetivo é desviar desses obstáculos, coletar itens úteis e sobreviver o maior tempo possível.
 
 ## 5. Objetivo do jogador
 
@@ -75,7 +75,7 @@ Exemplos:
 
 Objetivo:
 
-> Escreva aqui.
+> Sobreviver o maior tempo possível, desviando dos obstáculos e acumulando pontos. O jogador deverá alcançar 404 pontos para finalmente encontrar a paz e concluir o jogo.
 
 ## 6. Regras principais
 
@@ -91,11 +91,11 @@ Exemplo:
 
 Regras do grupo:
 
-- Regra 1:
-- Regra 2:
-- Regra 3:
-- Regra 4:
-- Regra 5:
+- Regra 1: O jogador inicia a partida com 3 vidas.
+- Regra 2: Cada obstáculo atingido remove 1 vida.
+- Regra 3: Itens especiais podem conceder pontos extras ou recuperar vidas.
+- Regra 4: A pontuação aumenta conforme o tempo de sobrevivência.
+- Regra 5: O jogador vence ao alcançar 404 pontos ou perde ao ficar sem vidas.
 
 ## 7. Condição de vitória
 
@@ -111,7 +111,7 @@ Exemplos:
 
 Condição de vitória:
 
-> Escreva aqui.
+> O jogador vence ao atingir 404 pontos, representando o momento em que finalmente encontra a paz. Ao vencer, será exibida uma mensagem indicando "200 OK: Paz Encontrada".
 
 ## 8. Condição de derrota ou encerramento
 
@@ -127,8 +127,7 @@ Exemplos:
 
 Condição de derrota ou encerramento:
 
-> Escreva aqui.
-
+> A partida termina quando o jogador perde todas as suas vidas ao colidir com obstáculos. Nesse momento será exibida a mensagem "404: Paz Não Encontrada".
 ## 9. Elementos previstos no jogo
 
 Descreva os principais elementos que farão parte do jogo.
@@ -141,7 +140,7 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> Um desenvolvedor representado por um personagem simples controlado pelo teclado, que pode se mover horizontalmente pela tela.
 
 ## Obstáculos, inimigos ou desafios
 
@@ -151,7 +150,7 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> Bugs, erros de sintaxe, conflitos de merge, reuniões inesperadas e deadlines aparecerão aleatoriamente e deverão ser evitados.
 
 ## Itens, alvos ou objetos de interação
 
@@ -161,7 +160,7 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> Itens especiais como café, testes automatizados e ChatGPT poderão aparecer durante a partida oferecendo benefícios ao jogador.
 
 ## Pontuação, vidas, tempo ou progresso
 
@@ -171,7 +170,7 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> O jogador começa com 3 vidas. A pontuação aumenta conforme o tempo de sobrevivência e pela coleta de itens especiais. O progresso é medido pela quantidade de pontos acumulados até atingir 404 pontos.
 
 ## 10. Controles previstos
 
@@ -188,9 +187,10 @@ Exemplo:
 
 Controles do grupo:
 
-- Tecla/comando:
-- Tecla/comando:
-- Tecla/comando:
+- Seta para esquerda: mover para a esquerda
+- Seta para direita: mover para a direita
+- Espaço: iniciar/reiniciar a partida
+- ESC: sair do jogo
 
 ## 11. Organização inicial do código
 
@@ -245,9 +245,9 @@ Exemplos:
 
 Dificuldades previstas:
 
-- Dificuldade 1:
-- Dificuldade 2:
-- Dificuldade 3:
+- Dificuldade 1: Implementação do sistema de colisão entre jogador e obstáculos.
+- Dificuldade 2: Criação do sistema de geração aleatória de obstáculos e itens.
+- Dificuldade 3: Organização do código em módulos e implementação do sistema de pontuação e ranking.
 
 ## 14. Escopo mínimo para a entrega final
 
@@ -261,7 +261,7 @@ Exemplo:
 
 Escopo mínimo:
 
-> Escreva aqui.
+> A versão mínima do jogo terá um personagem controlado pelo teclado, obstáculos surgindo aleatoriamente, sistema de vidas, sistema de pontuação, tela de vitória ao alcançar 404 pontos e tela de derrota quando as vidas chegarem a zero.
 
 ## 15. Possíveis melhorias, caso haja tempo
 
@@ -281,6 +281,6 @@ Exemplos:
 
 Melhorias possíveis:
 
-- Melhoria 1:
-- Melhoria 2:
-- Melhoria 3:
+- Melhoria 1: Sistema de ranking com armazenamento do recorde em arquivo.
+- Melhoria 2: Aumento gradual da dificuldade com obstáculos mais rápidos conforme a pontuação aumenta.
+- Melhoria 3: Implementação de itens especiais com efeitos temporários, como invencibilidade por alguns segundos ou redução da velocidade dos obstáculos.
