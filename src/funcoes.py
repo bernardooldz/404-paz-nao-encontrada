@@ -49,9 +49,9 @@ def criar_obstaculo(imagens_originais):
     }
 
 
-def atualizar_obstaculo(obstaculo):
+def atualizar_obstaculo(obstaculo, velocidade=VELOCIDADE_OBSTACULO):
     # Desce o obstáculo e aumenta seu tamanho conforme se aproxima da base
-    obstaculo["y"] += VELOCIDADE_OBSTACULO
+    obstaculo["y"] += velocidade
     progresso = limitar_valor(obstaculo["y"] / ALTURA_TELA, 0.0, 1.0)
     obstaculo["tamanho"] = int(
         TAMANHO_OBSTACULO_MIN + (TAMANHO_OBSTACULO_MAX - TAMANHO_OBSTACULO_MIN) * progresso
@@ -70,3 +70,12 @@ def desenhar_obstaculo(tela, obstaculo):
     tam = obstaculo["tamanho"]
     imagem = pygame.transform.scale(obstaculo["imagem_original"], (tam, tam))
     tela.blit(imagem, rect_obstaculo(obstaculo))
+
+
+def desenhar_vidas(tela, vidas, coracao_cheio, coracao_vazio, total=3):
+    # Desenha os ícones de coração no topo da tela
+    largura, altura = coracao_cheio.get_size()
+    margem = 10
+    for i in range(total):
+        imagem = coracao_cheio if i < vidas else coracao_vazio
+        tela.blit(imagem, (margem + i * (largura + 6), margem))

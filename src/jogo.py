@@ -14,6 +14,10 @@ from src.config import (
     DURACAO_VIRAR,
     TAMANHO_OBSTACULO_MAX,
     INTERVALO_SPAWN,
+    DURACAO_DANO,
+    VELOCIDADE_SLOW,
+    VELOCIDADE_OBSTACULO,
+    INTERVALO_PISCAR,
 )
 from src.funcoes import (
     limitar_valor,
@@ -24,8 +28,14 @@ from src.funcoes import (
     atualizar_obstaculo,
     rect_obstaculo,
     desenhar_obstaculo,
+    desenhar_vidas,
 )
-from src.sprites import carregar_imagens_personagem, carregar_imagens_obstaculos
+from src.sprites import (
+    carregar_imagens_personagem,
+    carregar_imagens_dano,
+    carregar_imagens_coracoes,
+    carregar_imagens_obstaculos,
+)
 from src.dados import salvar_recorde, carregar_recorde
 
 
@@ -58,6 +68,8 @@ def executar_jogo():
     relogio = pygame.time.Clock()
 
     frames_frente, frame_direita, frame_esquerda = carregar_imagens_personagem()
+    frames_dano = carregar_imagens_dano()
+    coracao_cheio, coracao_vazio = carregar_imagens_coracoes()
     imagens_obstaculos = carregar_imagens_obstaculos()
 
     largura_sprite, altura_sprite = TAMANHO_PERSONAGEM
@@ -76,6 +88,10 @@ def executar_jogo():
     vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
+    # Estado de dano
+    timer_dano = 0          # frames restantes do efeito de dano
+    frame_dano_index = 0    # alterna entre os 2 frames de dano
+
     rodando = True
     while rodando:
         relogio.tick(FPS)
@@ -86,7 +102,7 @@ def executar_jogo():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 rodando = False
 
-        # Input
+        # --- Input ---
         teclas = pygame.key.get_pressed()
         if not (teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]
                 or teclas[pygame.K_a] or teclas[pygame.K_d]):
@@ -100,59 +116,77 @@ def executar_jogo():
                 coluna_atual = limitar_valor(coluna_atual + 1, 0, 2)
                 virando, timer_virar, pode_mover = "direita", DURACAO_VIRAR, False
 
-        # Animação
-        if timer_virar > 0:
-            timer_virar -= 1
+        # --- Animação do personagem ---
+        em_dano = timer_dano > 0
+
+        if em_dano:
+            timer_dano -= 1
+            # Alterna entre os 2 frames de dano a cada INTERVALO_PISCAR frames
+            frame_dano_index = (DURACAO_DANO - timer_dano) // INTERVALO_PISCAR % 2
+            sprite_atual = frames_dano[frame_dano_index]
+            # Piscar: esconde o sprite em frames alternados
+            piscar_visivel = ((DURACAO_DANO - timer_dano) // INTERVALO_PISCAR) % 2 == 0
         else:
-            virando = None
+            if timer_virar > 0:
+                timer_virar -= 1
+            else:
+                virando = None
 
-        if virando is None:
-            contador_animacao += 1
-            if contador_animacao >= intervalo_animacao:
-                contador_animacao = 0
-                frame_index = (frame_index + 1) % len(frames_frente)
+            if virando is None:
+                contador_animacao += 1
+                if contador_animacao >= intervalo_animacao:
+                    contador_animacao = 0
+                    frame_index = (frame_index + 1) % len(frames_frente)
 
-        if virando == "direita":
-            sprite_atual = frame_direita
-        elif virando == "esquerda":
-            sprite_atual = frame_esquerda
-        else:
-            sprite_atual = frames_frente[frame_index]
+            if virando == "direita":
+                sprite_atual = frame_direita
+            elif virando == "esquerda":
+                sprite_atual = frame_esquerda
+            else:
+                sprite_atual = frames_frente[frame_index]
 
-        # Obstáculos
+            piscar_visivel = True
+
+        # --- Obstáculos (slow durante dano) ---
+        velocidade_atual = VELOCIDADE_SLOW if em_dano else VELOCIDADE_OBSTACULO
+
         timer_spawn += 1
         if timer_spawn >= INTERVALO_SPAWN:
             timer_spawn = 0
             obstaculos.append(criar_obstaculo(imagens_obstaculos))
 
         for obs in obstaculos:
-            atualizar_obstaculo(obs)
+            atualizar_obstaculo(obs, velocidade_atual)
         obstaculos = [obs for obs in obstaculos if obs["y"] < ALTURA_TELA + TAMANHO_OBSTACULO_MAX]
 
-        # Colisão
+        # --- Colisão (ignorada durante efeito de dano) ---
         x_jogador = COLUNAS[coluna_atual] - largura_sprite // 2
         rect_jogador = pygame.Rect(x_jogador, y_jogador, largura_sprite, altura_sprite)
 
-        colidiu = next(
-            (obs for obs in obstaculos if verificar_colisao(rect_jogador, rect_obstaculo(obs))),
-            None
-        )
-        if colidiu:
-            vidas = tomar_dano(vidas, 1)
-            obstaculos.remove(colidiu)
+        if not em_dano:
+            colidiu = next(
+                (obs for obs in obstaculos if verificar_colisao(rect_jogador, rect_obstaculo(obs))),
+                None
+            )
+            if colidiu:
+                vidas = tomar_dano(vidas, 1)
+                obstaculos.remove(colidiu)
+                timer_dano = DURACAO_DANO
 
         if jogador_perdeu(vidas):
             rodando = False
 
-        if vidas < 3 and vidas > recorde:
-            recorde = vidas
-            salvar_recorde(CAMINHO_RECORDE, recorde)
-
-        # Renderização
+        # --- Renderização ---
         tela.fill(PRETO)
+
         for obs in obstaculos:
             desenhar_obstaculo(tela, obs)
-        tela.blit(sprite_atual, (x_jogador, y_jogador))
+
+        if piscar_visivel:
+            tela.blit(sprite_atual, (x_jogador, y_jogador))
+
+        desenhar_vidas(tela, vidas, coracao_cheio, coracao_vazio)
+
         pygame.display.flip()
 
     tela_game_over(tela, relogio)

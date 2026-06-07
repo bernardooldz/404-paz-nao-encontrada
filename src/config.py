@@ -25,3 +25,10 @@ TAMANHO_OBSTACULO_MIN = 30   # tamanho ao nascer ("longe")
 TAMANHO_OBSTACULO_MAX = 110  # tamanho ao chegar na base ("perto")
 INTERVALO_SPAWN = 90         # frames entre cada novo obstáculo
 VELOCIDADE_OBSTACULO = 3     # pixels por frame que desce
+
+# Sistema de vidas e dano
+DIR_SISTEMA = "assets/imagens/sistema"
+TAMANHO_CORACAO = (36, 36)
+DURACAO_DANO = 120           # frames que o efeito de dano dura (~2s)
+VELOCIDADE_SLOW = 1          # velocidade dos obstáculos durante o slow
+INTERVALO_PISCAR = 8         # frames entre cada piscar do personagem
