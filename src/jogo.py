@@ -1,5 +1,4 @@
 import pygame
-import os
 
 from src.config import (
     LARGURA_TELA,
@@ -7,64 +6,75 @@ from src.config import (
     FPS,
     TITULO_JOGO,
     PRETO,
+    BRANCO,
     CAMINHO_RECORDE,
     COLUNAS,
-    DIR_PERSONAGEM,
     TAMANHO_PERSONAGEM,
     FPS_ANIMACAO,
     DURACAO_VIRAR,
+    TAMANHO_OBSTACULO_MAX,
+    INTERVALO_SPAWN,
 )
-from src.funcoes import limitar_valor
+from src.funcoes import (
+    limitar_valor,
+    verificar_colisao,
+    tomar_dano,
+    jogador_perdeu,
+    criar_obstaculo,
+    atualizar_obstaculo,
+    rect_obstaculo,
+    desenhar_obstaculo,
+)
+from src.sprites import carregar_imagens_personagem, carregar_imagens_obstaculos
 from src.dados import salvar_recorde, carregar_recorde
 
 
-def carregar_imagens_personagem():
-    """Carrega e redimensiona os sprites do personagem principal."""
-    def carregar(nome):
-        caminho = os.path.join(DIR_PERSONAGEM, nome)
-        img = pygame.image.load(caminho).convert_alpha()
-        return pygame.transform.scale(img, TAMANHO_PERSONAGEM)
+def tela_game_over(tela, relogio):
+    # Exibe a tela de game over e aguarda tecla para encerrar
+    fonte_grande  = pygame.font.SysFont(None, 72)
+    fonte_pequena = pygame.font.SysFont(None, 36)
+    texto_titulo    = fonte_grande.render("404: Paz Não Encontrada", True, BRANCO)
+    texto_subtitulo = fonte_pequena.render("Pressione qualquer tecla para sair", True, BRANCO)
 
-    frames_frente = [
-        carregar("spritesheet-404-pne-andando-reto-frente-1.png"),
-        carregar("spritesheet-404-pne-andando-reto-frente-2.png"),
-        carregar("spritesheet-404-pne-andando-reto-frente-3.png"),
-    ]
-    frame_direita = carregar("spritesheet-404-pne-virando-direita-1.png")
-    frame_esquerda = carregar("spritesheet-404-pne-virando-esquerda-1.png")
-
-    return frames_frente, frame_direita, frame_esquerda
+    esperando = True
+    while esperando:
+        relogio.tick(FPS)
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                esperando = False
+            if evento.type == pygame.KEYDOWN:
+                esperando = False
+        tela.fill(PRETO)
+        tela.blit(texto_titulo,    texto_titulo.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2 - 40)))
+        tela.blit(texto_subtitulo, texto_subtitulo.get_rect(center=(LARGURA_TELA // 2, ALTURA_TELA // 2 + 30)))
+        pygame.display.flip()
 
 
 def executar_jogo():
-    """Executa o loop principal do jogo."""
+    # Executa o loop principal do jogo
     pygame.init()
-
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
 
     frames_frente, frame_direita, frame_esquerda = carregar_imagens_personagem()
+    imagens_obstaculos = carregar_imagens_obstaculos()
 
-    # Estado do jogador
-    coluna_atual = 1  # 0=esquerda, 1=centro, 2=direita
     largura_sprite, altura_sprite = TAMANHO_PERSONAGEM
     y_jogador = ALTURA_TELA - altura_sprite - 40
+    coluna_atual = 1
 
-    # Animação
     frame_index = 0
     contador_animacao = 0
     intervalo_animacao = FPS // FPS_ANIMACAO
-
-    # Controle de virada
-    virando = None   # "esquerda" ou "direita"
+    virando = None
     timer_virar = 0
-
-    # Controle para evitar input repetido enquanto tecla pressionada
     pode_mover = True
 
+    obstaculos = []
+    timer_spawn = 0
+    vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
-    pontos = 0
 
     rodando = True
     while rodando:
@@ -73,43 +83,35 @@ def executar_jogo():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_ESCAPE:
-                    rodando = False
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+                rodando = False
 
+        # Input
         teclas = pygame.key.get_pressed()
-
-        # Movimento entre colunas (só registra uma vez por pressão)
-        if not teclas[pygame.K_LEFT] and not teclas[pygame.K_RIGHT] \
-                and not teclas[pygame.K_a] and not teclas[pygame.K_d]:
+        if not (teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]
+                or teclas[pygame.K_a] or teclas[pygame.K_d]):
             pode_mover = True
 
         if pode_mover:
             if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
                 coluna_atual = limitar_valor(coluna_atual - 1, 0, 2)
-                virando = "esquerda"
-                timer_virar = DURACAO_VIRAR
-                pode_mover = False
+                virando, timer_virar, pode_mover = "esquerda", DURACAO_VIRAR, False
             elif teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
                 coluna_atual = limitar_valor(coluna_atual + 1, 0, 2)
-                virando = "direita"
-                timer_virar = DURACAO_VIRAR
-                pode_mover = False
+                virando, timer_virar, pode_mover = "direita", DURACAO_VIRAR, False
 
-        # Atualiza timer de virada
+        # Animação
         if timer_virar > 0:
             timer_virar -= 1
         else:
             virando = None
 
-        # Animação de andar (só avança quando não está virando)
         if virando is None:
             contador_animacao += 1
             if contador_animacao >= intervalo_animacao:
                 contador_animacao = 0
                 frame_index = (frame_index + 1) % len(frames_frente)
 
-        # Escolhe o sprite a desenhar
         if virando == "direita":
             sprite_atual = frame_direita
         elif virando == "esquerda":
@@ -117,12 +119,41 @@ def executar_jogo():
         else:
             sprite_atual = frames_frente[frame_index]
 
-        # Posição X centralizada na coluna
+        # Obstáculos
+        timer_spawn += 1
+        if timer_spawn >= INTERVALO_SPAWN:
+            timer_spawn = 0
+            obstaculos.append(criar_obstaculo(imagens_obstaculos))
+
+        for obs in obstaculos:
+            atualizar_obstaculo(obs)
+        obstaculos = [obs for obs in obstaculos if obs["y"] < ALTURA_TELA + TAMANHO_OBSTACULO_MAX]
+
+        # Colisão
         x_jogador = COLUNAS[coluna_atual] - largura_sprite // 2
+        rect_jogador = pygame.Rect(x_jogador, y_jogador, largura_sprite, altura_sprite)
+
+        colidiu = next(
+            (obs for obs in obstaculos if verificar_colisao(rect_jogador, rect_obstaculo(obs))),
+            None
+        )
+        if colidiu:
+            vidas = tomar_dano(vidas, 1)
+            obstaculos.remove(colidiu)
+
+        if jogador_perdeu(vidas):
+            rodando = False
+
+        if vidas < 3 and vidas > recorde:
+            recorde = vidas
+            salvar_recorde(CAMINHO_RECORDE, recorde)
 
         # Renderização
         tela.fill(PRETO)
+        for obs in obstaculos:
+            desenhar_obstaculo(tela, obs)
         tela.blit(sprite_atual, (x_jogador, y_jogador))
         pygame.display.flip()
 
+    tela_game_over(tela, relogio)
     pygame.quit()
