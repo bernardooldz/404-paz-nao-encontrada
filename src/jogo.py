@@ -33,6 +33,7 @@ from src.funcoes import (
     desenhar_obstaculo,
     desenhar_vidas,
     desenhar_pontuacao,
+    contagem_regressiva,
 )
 from src.sprites import (
     carregar_imagens_personagem,
@@ -48,7 +49,7 @@ AMARELO = (255, 220, 50)
 
 
 def tela_final(tela, relogio, vitoria, pontos, recorde):
-    """Exibe tela de vitória ou derrota com pontuação. Retorna True para jogar novamente."""
+    # Exibe tela de vitória ou derrota com pontuação. Retorna True para jogar novamente
     fonte_titulo  = pygame.font.SysFont(None, 68)
     fonte_media   = pygame.font.SysFont(None, 40)
     fonte_pequena = pygame.font.SysFont(None, 32)
@@ -92,7 +93,7 @@ def tela_final(tela, relogio, vitoria, pontos, recorde):
 
 
 def _estado_inicial():
-    """Retorna um dicionário com o estado zerado de uma partida."""
+    # Retorna dicionário com o estado zerado de uma partida
     return {
         "coluna_atual": 1,
         "frame_index": 0,
@@ -111,7 +112,7 @@ def _estado_inicial():
 
 
 def executar_jogo():
-    """Executa o loop principal do jogo, suportando reinício de partida."""
+    # Executa o loop principal do jogo, suportando reinício de partida
     pygame.init()
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     pygame.display.set_caption(TITULO_JOGO)
@@ -131,6 +132,9 @@ def executar_jogo():
         s = _estado_inicial()
         recorde_anterior = carregar_melhor_ranking(CAMINHO_RANKING)
 
+        if not contagem_regressiva(tela, relogio, LARGURA_TELA, ALTURA_TELA, FPS):
+            break
+
         rodando = True
         while rodando:
             relogio.tick(FPS)
@@ -143,7 +147,7 @@ def executar_jogo():
                     rodando = False
                     jogando = False
 
-            # --- Input ---
+            # Input
             teclas = pygame.key.get_pressed()
             if not (teclas[pygame.K_LEFT] or teclas[pygame.K_RIGHT]
                     or teclas[pygame.K_a] or teclas[pygame.K_d]):
@@ -157,13 +161,13 @@ def executar_jogo():
                     s["coluna_atual"] = limitar_valor(s["coluna_atual"] + 1, 0, 2)
                     s["virando"], s["timer_virar"], s["pode_mover"] = "direita", DURACAO_VIRAR, False
 
-            # --- Pontuação por tempo ---
+            # Pontuação por tempo
             s["timer_pontos"] += 1
             if s["timer_pontos"] >= FPS:
                 s["timer_pontos"] = 0
                 s["pontos"] = calcular_pontos(s["pontos"], PONTOS_POR_SEGUNDO)
 
-            # --- Animação do personagem ---
+            # Animação do personagem
             em_dano = s["timer_dano"] > 0
 
             if em_dano:
@@ -192,7 +196,7 @@ def executar_jogo():
 
                 piscar_visivel = True
 
-            # --- Obstáculos ---
+            # Obstáculos
             velocidade_atual = VELOCIDADE_SLOW if em_dano else VELOCIDADE_OBSTACULO
 
             s["timer_spawn"] += 1
@@ -206,7 +210,7 @@ def executar_jogo():
                 obs for obs in s["obstaculos"] if obs["y"] < ALTURA_TELA + TAMANHO_OBSTACULO_MAX
             ]
 
-            # --- Colisão ---
+            # Colisão
             x_jogador = COLUNAS[s["coluna_atual"]] - largura_sprite // 2
             rect_jogador = pygame.Rect(x_jogador, y_jogador, largura_sprite, altura_sprite)
 
@@ -224,7 +228,7 @@ def executar_jogo():
             if jogador_perdeu(s["vidas"]):
                 rodando = False
 
-            # --- Renderização ---
+            # Renderização
             tela.fill(PRETO)
             for obs in s["obstaculos"]:
                 desenhar_obstaculo(tela, obs)
@@ -234,7 +238,7 @@ def executar_jogo():
             desenhar_pontuacao(tela, s["pontos"], LARGURA_TELA)
             pygame.display.flip()
 
-        # --- Fim de partida ---
+        # Fim de partida
         if not jogando:
             break
 

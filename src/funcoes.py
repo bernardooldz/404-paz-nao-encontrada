@@ -82,7 +82,24 @@ def desenhar_vidas(tela, vidas, coracao_cheio, coracao_vazio, total=3):
 
 
 def desenhar_pontuacao(tela, pontos, largura_tela):
-    """Desenha o contador de pontuação centralizado no topo da tela."""
+    # Desenha o contador de pontuação centralizado no topo da tela
     fonte = pygame.font.SysFont(None, 36)
     texto = fonte.render(f"Pontos: {pontos}", True, (255, 255, 255))
     tela.blit(texto, texto.get_rect(centerx=largura_tela // 2, top=10))
+
+
+def contagem_regressiva(tela, relogio, largura_tela, altura_tela, fps):
+    # Exibe "3", "2", "1", "JÁ!" por 1 segundo cada antes de iniciar a partida
+    fonte = pygame.font.SysFont(None, 160)
+    etapas = ["3", "2", "1", "JÁ!"]
+    for etapa in etapas:
+        for _ in range(fps):
+            relogio.tick(fps)
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    return False
+            tela.fill((0, 0, 0))
+            texto = fonte.render(etapa, True, (255, 255, 255))
+            tela.blit(texto, texto.get_rect(center=(largura_tela // 2, altura_tela // 2)))
+            pygame.display.flip()
+    return True
