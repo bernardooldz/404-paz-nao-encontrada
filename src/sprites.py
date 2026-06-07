@@ -15,6 +15,9 @@ def carregar_imagens_personagem():
         carregar("spritesheet-404-pne-andando-reto-frente-1.png"),
         carregar("spritesheet-404-pne-andando-reto-frente-2.png"),
         carregar("spritesheet-404-pne-andando-reto-frente-3.png"),
+        carregar("spritesheet-404-pne-andando-reto-frente-4.png"),
+        carregar("spritesheet-404-pne-andando-reto-frente-5.png"),
+        carregar("spritesheet-404-pne-andando-reto-frente-6.png"),
     ]
     frame_direita  = carregar("spritesheet-404-pne-virando-direita-1.png")
     frame_esquerda = carregar("spritesheet-404-pne-virando-esquerda-1.png")
