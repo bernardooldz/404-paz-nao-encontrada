@@ -79,3 +79,10 @@ def desenhar_vidas(tela, vidas, coracao_cheio, coracao_vazio, total=3):
     for i in range(total):
         imagem = coracao_cheio if i < vidas else coracao_vazio
         tela.blit(imagem, (margem + i * (largura + 6), margem))
+
+
+def desenhar_pontuacao(tela, pontos, largura_tela):
+    """Desenha o contador de pontuação centralizado no topo da tela."""
+    fonte = pygame.font.SysFont(None, 36)
+    texto = fonte.render(f"Pontos: {pontos}", True, (255, 255, 255))
+    tela.blit(texto, texto.get_rect(centerx=largura_tela // 2, top=10))

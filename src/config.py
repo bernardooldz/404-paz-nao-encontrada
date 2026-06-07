@@ -9,6 +9,9 @@ BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 
 CAMINHO_RECORDE = "data/recorde.txt"
+CAMINHO_RANKING = "data/ranking.txt"
+
+PONTOS_POR_SEGUNDO = 10  # pontos ganhos a cada segundo sobrevivido
 
 # Colunas do jogador (posições X centrais)
 COLUNAS = [LARGURA_TELA // 4, LARGURA_TELA // 2, 3 * LARGURA_TELA // 4]
