@@ -1,7 +1,10 @@
 import pygame
 import os
 
-from src.config import DIR_PERSONAGEM, DIR_OBSTACULOS, DIR_SISTEMA, TAMANHO_PERSONAGEM, TAMANHO_CORACAO
+from src.config import (
+    DIR_PERSONAGEM, DIR_OBSTACULOS, DIR_SISTEMA, DIR_CONSUMIVEIS,
+    TAMANHO_PERSONAGEM, TAMANHO_CORACAO, TAMANHO_CONSUMIVEL,
+)
 
 
 def carregar_imagens_personagem():
@@ -57,3 +60,21 @@ def carregar_imagens_obstaculos():
         caminho = os.path.join(DIR_OBSTACULOS, arquivo)
         imagens.append(pygame.image.load(caminho).convert_alpha())
     return imagens
+
+
+def carregar_consumiveis():
+    # Carrega imagens dos consumiveis e dos frames de uso do personagem
+    # Retorna dicionario: tipo -> {"item": Surface, "uso": Surface}
+    nomes = {
+        "cafe":    ("spritesheet-404-pne-consumiveis-_-dano-cafe.png",    "spritesheet-404-pne-consumiveis-_-dano-usando-cafe.png"),
+        "monster": ("spritesheet-404-pne-consumiveis-_-dano-monster.png", "spritesheet-404-pne-consumiveis-_-dano-usando-monster.png"),
+        "spotify": ("spritesheet-404-pne-consumiveis-_-dano-spotify.png", "spritesheet-404-pne-consumiveis-_-dano-usando-spotify.png"),
+    }
+    resultado = {}
+    for tipo, (arq_item, arq_uso) in nomes.items():
+        img_item = pygame.image.load(os.path.join(DIR_CONSUMIVEIS, arq_item)).convert_alpha()
+        img_item = pygame.transform.scale(img_item, TAMANHO_CONSUMIVEL)
+        img_uso  = pygame.image.load(os.path.join(DIR_PERSONAGEM, arq_uso)).convert_alpha()
+        img_uso  = pygame.transform.scale(img_uso, TAMANHO_PERSONAGEM)
+        resultado[tipo] = {"item": img_item, "uso": img_uso}
+    return resultado

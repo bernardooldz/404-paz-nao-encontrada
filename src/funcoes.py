@@ -7,6 +7,11 @@ from src.config import (
     TAMANHO_OBSTACULO_MIN,
     TAMANHO_OBSTACULO_MAX,
     VELOCIDADE_OBSTACULO,
+    VELOCIDADE_CONSUMIVEL,
+    COR_EFEITO_CAFE,
+    COR_EFEITO_MONSTER,
+    COR_EFEITO_SPOTIFY,
+    LARGURA_TELA,
 )
 
 
@@ -103,3 +108,67 @@ def contagem_regressiva(tela, relogio, largura_tela, altura_tela, fps):
             tela.blit(texto, texto.get_rect(center=(largura_tela // 2, altura_tela // 2)))
             pygame.display.flip()
     return True
+
+
+def criar_consumivel(imagens_consumiveis):
+    # Cria um consumível aleatório em uma coluna aleatória, nascendo no topo
+    tipo = random.choice(list(imagens_consumiveis.keys()))
+    return {
+        "tipo": tipo,
+        "imagem": imagens_consumiveis[tipo]["item"],
+        "coluna": random.randint(0, 2),
+        "y": float(-60),
+    }
+
+
+def atualizar_consumivel(consumivel):
+    # Desce o consumível na tela
+    consumivel["y"] += VELOCIDADE_CONSUMIVEL
+
+
+def rect_consumivel(consumivel):
+    # Retorna o Rect do consumível centralizado na sua coluna
+    w, h = consumivel["imagem"].get_size()
+    x = COLUNAS[consumivel["coluna"]] - w // 2
+    return pygame.Rect(x, int(consumivel["y"]), w, h)
+
+
+def desenhar_consumivel(tela, consumivel):
+    # Desenha o consumível na tela
+    tela.blit(consumivel["imagem"], rect_consumivel(consumivel))
+
+
+_CORES_EFEITO = {
+    "cafe":    COR_EFEITO_CAFE,
+    "monster": COR_EFEITO_MONSTER,
+    "spotify": COR_EFEITO_SPOTIFY,
+}
+
+
+def desenhar_efeito_ativo(tela, efeito_ativo, timer_efeito, duracao_efeito):
+    # Desenha overlay colorido e barra de duração do efeito ativo
+    if not efeito_ativo:
+        return
+    cor = _CORES_EFEITO.get(efeito_ativo)
+    if not cor:
+        return
+
+    # Overlay semitransparente cobrindo toda a tela
+    overlay = pygame.Surface((LARGURA_TELA, 600), pygame.SRCALPHA)
+    overlay.fill(cor)
+    tela.blit(overlay, (0, 0))
+
+    # Barra de progresso no canto superior direito
+    proporcao = timer_efeito / duracao_efeito
+    barra_largura = 120
+    barra_altura = 10
+    x_barra = LARGURA_TELA - barra_largura - 10
+    y_barra = 10
+    pygame.draw.rect(tela, (60, 60, 60),  (x_barra, y_barra, barra_largura, barra_altura))
+    pygame.draw.rect(tela, cor[:3],       (x_barra, y_barra, int(barra_largura * proporcao), barra_altura))
+
+    # Nome do efeito acima da barra
+    nomes = {"cafe": "Cafe: +vida", "monster": "Monster: 2x pts", "spotify": "Spotify: invenc."}
+    fonte = pygame.font.SysFont(None, 22)
+    texto = fonte.render(nomes[efeito_ativo], True, (255, 255, 255))
+    tela.blit(texto, texto.get_rect(right=LARGURA_TELA - 10, bottom=y_barra - 2))

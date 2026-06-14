@@ -35,3 +35,16 @@ TAMANHO_CORACAO = (36, 36)
 DURACAO_DANO = 120           # frames que o efeito de dano dura (~2s)
 VELOCIDADE_SLOW = 1          # velocidade dos obstáculos durante o slow
 INTERVALO_PISCAR = 8         # frames entre cada piscar do personagem
+
+# Consumíveis
+DIR_CONSUMIVEIS = "assets/imagens/consumiveis"
+TAMANHO_CONSUMIVEL = (50, 68)
+INTERVALO_SPAWN_CONSUMIVEL = 300  # frames entre tentativas de spawn (~5s)
+VELOCIDADE_CONSUMIVEL = 3
+DURACAO_EFEITO = 300              # frames que o efeito dura (~5s)
+DURACAO_FRAME_USO = 40            # frames que o sprite de "usando item" fica visível
+
+# Cores dos efeitos ativos (sobreposição semitransparente na tela)
+COR_EFEITO_CAFE    = (255, 200,  50,  35)  # dourado
+COR_EFEITO_MONSTER = ( 80, 220,  80,  35)  # verde
+COR_EFEITO_SPOTIFY = (140,  60, 220,  35)  # roxo

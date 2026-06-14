@@ -20,6 +20,9 @@ from src.config import (
     VELOCIDADE_OBSTACULO,
     INTERVALO_PISCAR,
     PONTOS_POR_SEGUNDO,
+    INTERVALO_SPAWN_CONSUMIVEL,
+    DURACAO_EFEITO,
+    DURACAO_FRAME_USO,
 )
 from src.funcoes import (
     limitar_valor,
@@ -34,22 +37,28 @@ from src.funcoes import (
     desenhar_vidas,
     desenhar_pontuacao,
     contagem_regressiva,
+    criar_consumivel,
+    atualizar_consumivel,
+    rect_consumivel,
+    desenhar_consumivel,
+    desenhar_efeito_ativo,
 )
 from src.sprites import (
     carregar_imagens_personagem,
     carregar_imagens_dano,
     carregar_imagens_coracoes,
     carregar_imagens_obstaculos,
+    carregar_consumiveis,
 )
 from src.dados import salvar_recorde, carregar_recorde, salvar_ranking, carregar_melhor_ranking
 
 
-VERDE = (100, 220, 100)
-AMARELO = (255, 220, 50)
+VERDE   = (100, 220, 100)
+AMARELO = (255, 220,  50)
 
 
 def tela_final(tela, relogio, vitoria, pontos, recorde):
-    # Exibe tela de vitória ou derrota com pontuação. Retorna True para jogar novamente
+    # Exibe tela de vitória ou derrota. Retorna True para jogar novamente
     fonte_titulo  = pygame.font.SysFont(None, 68)
     fonte_media   = pygame.font.SysFont(None, 40)
     fonte_pequena = pygame.font.SysFont(None, 32)
@@ -57,9 +66,9 @@ def tela_final(tela, relogio, vitoria, pontos, recorde):
     cor_titulo = VERDE if vitoria else (220, 60, 60)
     titulo = "200 OK: Paz Encontrada!" if vitoria else "404: Paz Não Encontrada"
 
-    texto_titulo   = fonte_titulo.render(titulo, True, cor_titulo)
-    texto_pontos   = fonte_media.render(f"Pontuação: {pontos}", True, BRANCO)
-    texto_recorde  = fonte_media.render(f"Recorde: {recorde}", True, AMARELO)
+    texto_titulo    = fonte_titulo.render(titulo, True, cor_titulo)
+    texto_pontos    = fonte_media.render(f"Pontuação: {pontos}", True, BRANCO)
+    texto_recorde   = fonte_media.render(f"Recorde: {recorde}", True, AMARELO)
     texto_reiniciar = fonte_pequena.render("ESPAÇO  para  jogar novamente", True, BRANCO)
     texto_sair      = fonte_pequena.render("ESC  para  sair", True, BRANCO)
 
@@ -103,11 +112,17 @@ def _estado_inicial():
         "pode_mover": True,
         "obstaculos": [],
         "timer_spawn": 0,
+        "consumiveis": [],
+        "timer_spawn_consumivel": 0,
         "vidas": 3,
         "pontos": 0,
         "timer_pontos": 0,
         "timer_dano": 0,
         "frame_dano_index": 0,
+        "efeito_ativo": None, # efeito ativo: None | "cafe" | "monster" | "spotify"
+        "timer_efeito": 0,
+        "frame_uso": None, # frame de uso do item (flash visual breve)
+        "timer_uso": 0,
     }
 
 
@@ -119,9 +134,10 @@ def executar_jogo():
     relogio = pygame.time.Clock()
 
     frames_frente, frame_direita, frame_esquerda = carregar_imagens_personagem()
-    frames_dano = carregar_imagens_dano()
+    frames_dano       = carregar_imagens_dano()
     coracao_cheio, coracao_vazio = carregar_imagens_coracoes()
     imagens_obstaculos = carregar_imagens_obstaculos()
+    imagens_consumiveis = carregar_consumiveis()
 
     largura_sprite, altura_sprite = TAMANHO_PERSONAGEM
     y_jogador = ALTURA_TELA - altura_sprite - 40
@@ -161,16 +177,34 @@ def executar_jogo():
                     s["coluna_atual"] = limitar_valor(s["coluna_atual"] + 1, 0, 2)
                     s["virando"], s["timer_virar"], s["pode_mover"] = "direita", DURACAO_VIRAR, False
 
-            # Pontuação por tempo
+            # Pontuação por tempo (dobro se Monster ativo)
             s["timer_pontos"] += 1
             if s["timer_pontos"] >= FPS:
                 s["timer_pontos"] = 0
-                s["pontos"] = calcular_pontos(s["pontos"], PONTOS_POR_SEGUNDO)
+                ganho = PONTOS_POR_SEGUNDO * (2 if s["efeito_ativo"] == "monster" else 1)
+                s["pontos"] = calcular_pontos(s["pontos"], ganho)
+
+            # Timer do efeito ativo
+            if s["efeito_ativo"]:
+                s["timer_efeito"] -= 1
+                if s["timer_efeito"] <= 0:
+                    s["efeito_ativo"] = None
+                    s["timer_efeito"] = 0
+
+            # Timer do frame de uso (flash visual)
+            if s["timer_uso"] > 0:
+                s["timer_uso"] -= 1
+                if s["timer_uso"] == 0:
+                    s["frame_uso"] = None
 
             # Animação do personagem
             em_dano = s["timer_dano"] > 0
 
-            if em_dano:
+            if s["timer_uso"] > 0 and not em_dano:
+                # Flash do item coletado: mostra sprite de uso piscando
+                piscar_visivel = (s["timer_uso"] // INTERVALO_PISCAR) % 2 == 0
+                sprite_atual = s["frame_uso"]
+            elif em_dano:
                 s["timer_dano"] -= 1
                 s["frame_dano_index"] = (DURACAO_DANO - s["timer_dano"]) // INTERVALO_PISCAR % 2
                 sprite_atual = frames_dano[s["frame_dano_index"]]
@@ -196,7 +230,7 @@ def executar_jogo():
 
                 piscar_visivel = True
 
-            # Obstáculos
+            # Obstáculos (slow durante dano)
             velocidade_atual = VELOCIDADE_SLOW if em_dano else VELOCIDADE_OBSTACULO
 
             s["timer_spawn"] += 1
@@ -210,11 +244,24 @@ def executar_jogo():
                 obs for obs in s["obstaculos"] if obs["y"] < ALTURA_TELA + TAMANHO_OBSTACULO_MAX
             ]
 
-            # Colisão
+            # Consumíveis
+            s["timer_spawn_consumivel"] += 1
+            if s["timer_spawn_consumivel"] >= INTERVALO_SPAWN_CONSUMIVEL:
+                s["timer_spawn_consumivel"] = 0
+                s["consumiveis"].append(criar_consumivel(imagens_consumiveis))
+
+            for con in s["consumiveis"]:
+                atualizar_consumivel(con)
+            s["consumiveis"] = [
+                con for con in s["consumiveis"] if con["y"] < ALTURA_TELA + 80
+            ]
+
+            # Colisão com obstáculos (ignorada se Spotify ativo ou em dano)
             x_jogador = COLUNAS[s["coluna_atual"]] - largura_sprite // 2
             rect_jogador = pygame.Rect(x_jogador, y_jogador, largura_sprite, altura_sprite)
 
-            if not em_dano:
+            invencivel = em_dano or s["efeito_ativo"] == "spotify"
+            if not invencivel:
                 colidiu = next(
                     (obs for obs in s["obstaculos"]
                      if verificar_colisao(rect_jogador, rect_obstaculo(obs))),
@@ -225,15 +272,43 @@ def executar_jogo():
                     s["obstaculos"].remove(colidiu)
                     s["timer_dano"] = DURACAO_DANO
 
+            # Colisão com consumíveis
+            coletou = next(
+                (con for con in s["consumiveis"]
+                 if verificar_colisao(rect_jogador, rect_consumivel(con))),
+                None
+            )
+            if coletou:
+                tipo = coletou["tipo"]
+                s["consumiveis"].remove(coletou)
+                s["frame_uso"] = imagens_consumiveis[tipo]["uso"]
+                s["timer_uso"] = DURACAO_FRAME_USO
+
+                if tipo == "cafe":
+                    # Restaura 1 vida, máximo 3
+                    s["vidas"] = limitar_valor(s["vidas"] + 1, 0, 3)
+                else:
+                    # Monster e Spotify: ativa efeito por DURACAO_EFEITO frames
+                    s["efeito_ativo"] = tipo
+                    s["timer_efeito"] = DURACAO_EFEITO
+
             if jogador_perdeu(s["vidas"]):
                 rodando = False
 
             # Renderização
             tela.fill(PRETO)
+
             for obs in s["obstaculos"]:
                 desenhar_obstaculo(tela, obs)
+            for con in s["consumiveis"]:
+                desenhar_consumivel(tela, con)
+
             if piscar_visivel:
                 tela.blit(sprite_atual, (x_jogador, y_jogador))
+
+            # Overlay e barra do efeito ativo (desenhado após sprites, antes do HUD)
+            desenhar_efeito_ativo(tela, s["efeito_ativo"], s["timer_efeito"], DURACAO_EFEITO)
+
             desenhar_vidas(tela, s["vidas"], coracao_cheio, coracao_vazio)
             desenhar_pontuacao(tela, s["pontos"], LARGURA_TELA)
             pygame.display.flip()
