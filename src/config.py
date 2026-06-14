@@ -1,5 +1,5 @@
 # Configurações centrais do jogo (tela, cores e caminhos de arquivos).
-LARGURA_TELA = 800
+LARGURA_TELA = 750
 ALTURA_TELA = 900
 FPS = 60
 
@@ -13,8 +13,8 @@ CAMINHO_RANKING = "data/ranking.txt"
 
 PONTOS_POR_SEGUNDO = 10  # pontos ganhos a cada segundo sobrevivido
 
-# Colunas do jogador (posições X centrais)
-COLUNAS = [LARGURA_TELA // 4, LARGURA_TELA // 2, 3 * LARGURA_TELA // 4]
+# Colunas do jogador (posições X centrais — divididas em terços para pistas simétricas)
+COLUNAS = [LARGURA_TELA // 6, LARGURA_TELA // 2, 5 * LARGURA_TELA // 6]
 
 # Animação do personagem
 DIR_PERSONAGEM = "assets/imagens/personagem-principal"
@@ -56,3 +56,14 @@ COR_EFEITO_SPOTIFY = (140,  60, 220,  35)  # roxo
 # Audio
 VOLUME_MUSICA = 0.45
 VOLUME_EFEITOS = 0.70
+# Efeito Matrix (fundo)
+COR_MATRIX_BRILHANTE = (140, 255, 140)  # caractere mais recente
+COR_MATRIX_MEDIO     = (  0, 160,   0)  # caracteres do meio
+COR_MATRIX_ESCURO    = (  0,  55,   0)  # rastro apagando
+TAMANHO_FONTE_MATRIX = 16
+VELOCIDADE_MATRIX    = 2
+DENSIDADE_MATRIX     = 0.97
+
+# Linhas divisoras das pistas (bordas nos terços da tela)
+COR_LINHA_PISTA  = (0, 55, 0)
+X_LINHAS_PISTA   = [0, LARGURA_TELA // 3, 2 * LARGURA_TELA // 3, LARGURA_TELA - 1]

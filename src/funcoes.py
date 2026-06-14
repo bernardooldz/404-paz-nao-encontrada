@@ -18,6 +18,14 @@ from src.config import (
     VELOCIDADE_OBSTACULO_MAXIMA,
     INTERVALO_SPAWN_CONSUMIVEL_INICIAL,
     INTERVALO_SPAWN_CONSUMIVEL_MINIMO,
+    COR_MATRIX_BRILHANTE,
+    COR_MATRIX_MEDIO,
+    COR_MATRIX_ESCURO,
+    TAMANHO_FONTE_MATRIX,
+    VELOCIDADE_MATRIX,
+    DENSIDADE_MATRIX,
+    COR_LINHA_PISTA,
+    X_LINHAS_PISTA,
 )
 
 
@@ -184,12 +192,72 @@ def desenhar_efeito_ativo(tela, efeito_ativo, timer_efeito, duracao_efeito):
     barra_largura = 120
     barra_altura = 10
     x_barra = LARGURA_TELA - barra_largura - 10
-    y_barra = 10
-    pygame.draw.rect(tela, (60, 60, 60),  (x_barra, y_barra, barra_largura, barra_altura))
-    pygame.draw.rect(tela, cor[:3],       (x_barra, y_barra, int(barra_largura * proporcao), barra_altura))
-
-    # Nome do efeito acima da barra
+    y_nome  = 36   # abaixo do HUD de pontuacao
+    y_barra = y_nome + 18
     nomes = {"cafe": "Cafe: +vida", "monster": "Monster: 2x pts", "spotify": "Spotify: invenc."}
     fonte = pygame.font.SysFont(None, 22)
     texto = fonte.render(nomes[efeito_ativo], True, (255, 255, 255))
-    tela.blit(texto, texto.get_rect(right=LARGURA_TELA - 10, bottom=y_barra - 2))
+    tela.blit(texto, texto.get_rect(right=LARGURA_TELA - 10, top=y_nome))
+    pygame.draw.rect(tela, (60, 60, 60), (x_barra, y_barra, barra_largura, barra_altura))
+    pygame.draw.rect(tela, cor[:3],      (x_barra, y_barra, int(barra_largura * proporcao), barra_altura))
+
+
+def criar_estado_matrix():
+    # Inicializa o estado do efeito Matrix: uma lista de colunas com posicao y e comprimento do rastro
+    num_colunas = LARGURA_TELA // TAMANHO_FONTE_MATRIX
+    colunas = []
+    for _ in range(num_colunas):
+        colunas.append({
+            "y": random.randint(-ALTURA_TELA, 0),  # posicao inicial espalhada
+            "comprimento": random.randint(5, 20),   # tamanho do rastro em caracteres
+            "ativa": random.random() > 0.6,
+        })
+    return colunas
+
+
+# Caracteres usados no efeito Matrix (mistura de codigo e simbolos)
+_CHARS_MATRIX = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[]<>/\\|=+-_"
+
+
+def atualizar_matrix(colunas):
+    # Avanca cada coluna ativa e reativa colunas inativas aleatoriamente
+    for col in colunas:
+        if col["ativa"]:
+            col["y"] += VELOCIDADE_MATRIX
+            # Reinicia a coluna quando sair completamente da tela
+            if col["y"] > ALTURA_TELA + col["comprimento"] * TAMANHO_FONTE_MATRIX:
+                col["y"] = random.randint(-200, 0)
+                col["comprimento"] = random.randint(5, 20)
+                col["ativa"] = False
+        else:
+            # Chance de ativar a coluna a cada frame
+            if random.random() > DENSIDADE_MATRIX:
+                col["ativa"] = True
+
+
+def desenhar_matrix(tela, colunas, fonte_matrix):
+    # Desenha o rastro de caracteres de cada coluna ativa
+    tam = TAMANHO_FONTE_MATRIX
+    for i, col in enumerate(colunas):
+        if not col["ativa"]:
+            continue
+        x = i * tam
+        for j in range(col["comprimento"]):
+            y = int(col["y"]) - j * tam
+            if y < -tam or y > ALTURA_TELA:
+                continue
+            if j == 0:
+                cor = COR_MATRIX_BRILHANTE
+            elif j < col["comprimento"] // 3:
+                cor = COR_MATRIX_MEDIO
+            else:
+                cor = COR_MATRIX_ESCURO
+            char = random.choice(_CHARS_MATRIX)
+            surf = fonte_matrix.render(char, True, cor)
+            tela.blit(surf, (x, y))
+
+
+def desenhar_linhas_pista(tela):
+    # Desenha linhas verticais nas bordas das 3 pistas (incluindo extremos da tela)
+    for x in X_LINHAS_PISTA:
+        pygame.draw.line(tela, COR_LINHA_PISTA, (x, 0), (x, ALTURA_TELA), 1)

@@ -20,6 +20,7 @@ from src.config import (
     PONTOS_POR_SEGUNDO,
     DURACAO_EFEITO,
     DURACAO_FRAME_USO,
+    TAMANHO_FONTE_MATRIX,
 )
 from src.funcoes import (
     limitar_valor,
@@ -40,6 +41,10 @@ from src.funcoes import (
     desenhar_consumivel,
     desenhar_efeito_ativo,
     calcular_dificuldade,
+    criar_estado_matrix,
+    atualizar_matrix,
+    desenhar_matrix,
+    desenhar_linhas_pista,
 )
 from src.sprites import (
     carregar_imagens_personagem,
@@ -150,6 +155,8 @@ def executar_jogo():
     largura_sprite, altura_sprite = TAMANHO_PERSONAGEM
     y_jogador = ALTURA_TELA - altura_sprite - 40
     intervalo_animacao = FPS // FPS_ANIMACAO
+    fonte_matrix = pygame.font.SysFont("courier", TAMANHO_FONTE_MATRIX)
+    colunas_matrix = criar_estado_matrix()
 
     tocar_musica_fundo()
 
@@ -316,6 +323,9 @@ def executar_jogo():
 
             # Renderização
             tela.fill(PRETO)
+            atualizar_matrix(colunas_matrix)
+            desenhar_matrix(tela, colunas_matrix, fonte_matrix)
+            desenhar_linhas_pista(tela)
 
             for obs in s["obstaculos"]:
                 desenhar_obstaculo(tela, obs)
