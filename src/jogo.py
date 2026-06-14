@@ -50,6 +50,14 @@ from src.sprites import (
 )
 from src.dados import salvar_recorde, carregar_recorde, salvar_ranking, carregar_melhor_ranking
 
+from assets.sons.sounds import (
+    inicializar_audio,
+    preparar_mixer,
+    tocar_musica_fundo,
+    tocar_som_dano,
+    tocar_som_power_up,
+)
+
 
 VERDE   = (100, 220, 100)
 AMARELO = (255, 220,  50)
@@ -126,7 +134,9 @@ def _estado_inicial():
 
 def executar_jogo():
     # Executa o loop principal do jogo, suportando reinício de partida
+    preparar_mixer()
     pygame.init()
+    inicializar_audio()
     tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
     pygame.display.set_caption(TITULO_JOGO)
     relogio = pygame.time.Clock()
@@ -140,6 +150,8 @@ def executar_jogo():
     largura_sprite, altura_sprite = TAMANHO_PERSONAGEM
     y_jogador = ALTURA_TELA - altura_sprite - 40
     intervalo_animacao = FPS // FPS_ANIMACAO
+
+    tocar_musica_fundo()
 
     jogando = True
     while jogando:
@@ -276,6 +288,7 @@ def executar_jogo():
                     s["vidas"] = tomar_dano(s["vidas"], 1)
                     s["obstaculos"].remove(colidiu)
                     s["timer_dano"] = DURACAO_DANO
+                    tocar_som_dano()
 
             # Colisão com consumíveis
             coletou = next(
@@ -286,6 +299,7 @@ def executar_jogo():
             if coletou:
                 tipo = coletou["tipo"]
                 s["consumiveis"].remove(coletou)
+                tocar_som_power_up()
                 s["frame_uso"] = imagens_consumiveis[tipo]["uso"]
                 s["timer_uso"] = DURACAO_FRAME_USO
 

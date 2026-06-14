@@ -52,3 +52,7 @@ DURACAO_FRAME_USO = 40            # frames que o sprite de "usando item" fica vi
 COR_EFEITO_CAFE    = (255, 200,  50,  35)  # dourado
 COR_EFEITO_MONSTER = ( 80, 220,  80,  35)  # verde
 COR_EFEITO_SPOTIFY = (140,  60, 220,  35)  # roxo
+
+# Audio
+VOLUME_MUSICA = 0.45
+VOLUME_EFEITOS = 0.70
