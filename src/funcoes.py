@@ -4,6 +4,7 @@ import random
 from src.config import (
     COLUNAS,
     ALTURA_TELA,
+    LARGURA_TELA,
     TAMANHO_OBSTACULO_MIN,
     TAMANHO_OBSTACULO_MAX,
     VELOCIDADE_OBSTACULO,
@@ -11,7 +12,6 @@ from src.config import (
     COR_EFEITO_CAFE,
     COR_EFEITO_MONSTER,
     COR_EFEITO_SPOTIFY,
-    LARGURA_TELA,
 )
 
 
@@ -154,7 +154,7 @@ def desenhar_efeito_ativo(tela, efeito_ativo, timer_efeito, duracao_efeito):
         return
 
     # Overlay semitransparente cobrindo toda a tela
-    overlay = pygame.Surface((LARGURA_TELA, 600), pygame.SRCALPHA)
+    overlay = pygame.Surface((LARGURA_TELA, ALTURA_TELA), pygame.SRCALPHA)
     overlay.fill(cor)
     tela.blit(overlay, (0, 0))
 

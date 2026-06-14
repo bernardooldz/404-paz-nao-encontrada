@@ -1,6 +1,6 @@
 # Configurações centrais do jogo (tela, cores e caminhos de arquivos).
 LARGURA_TELA = 800
-ALTURA_TELA = 600
+ALTURA_TELA = 900
 FPS = 60
 
 TITULO_JOGO = "404: Paz Não Encontrada"
