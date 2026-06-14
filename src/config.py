@@ -26,8 +26,11 @@ DURACAO_VIRAR = 15
 DIR_OBSTACULOS = "assets/imagens/obstaculos"
 TAMANHO_OBSTACULO_MIN = 30   # tamanho ao nascer ("longe")
 TAMANHO_OBSTACULO_MAX = 110  # tamanho ao chegar na base ("perto")
-INTERVALO_SPAWN = 90         # frames entre cada novo obstáculo
-VELOCIDADE_OBSTACULO = 3     # pixels por frame que desce
+INTERVALO_SPAWN_INICIAL   = 150  # frames no início (~2.5s)
+INTERVALO_SPAWN_MINIMO    = 55   # frames no limite máximo de dificuldade (~0.9s)
+VELOCIDADE_OBSTACULO_INICIAL = 2
+VELOCIDADE_OBSTACULO_MAXIMA  = 6
+VELOCIDADE_OBSTACULO = VELOCIDADE_OBSTACULO_INICIAL  # alias usado em funcoes.py
 
 # Sistema de vidas e dano
 DIR_SISTEMA = "assets/imagens/sistema"
@@ -39,7 +42,8 @@ INTERVALO_PISCAR = 8         # frames entre cada piscar do personagem
 # Consumíveis
 DIR_CONSUMIVEIS = "assets/imagens/consumiveis"
 TAMANHO_CONSUMIVEL = (50, 68)
-INTERVALO_SPAWN_CONSUMIVEL = 300  # frames entre tentativas de spawn (~5s)
+INTERVALO_SPAWN_CONSUMIVEL_INICIAL = 450  # frames no início (~7.5s)
+INTERVALO_SPAWN_CONSUMIVEL_MINIMO  = 240  # frames no máximo de dificuldade (~4s)
 VELOCIDADE_CONSUMIVEL = 3
 DURACAO_EFEITO = 300              # frames que o efeito dura (~5s)
 DURACAO_FRAME_USO = 40            # frames que o sprite de "usando item" fica visível

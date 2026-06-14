@@ -12,6 +12,12 @@ from src.config import (
     COR_EFEITO_CAFE,
     COR_EFEITO_MONSTER,
     COR_EFEITO_SPOTIFY,
+    INTERVALO_SPAWN_INICIAL,
+    INTERVALO_SPAWN_MINIMO,
+    VELOCIDADE_OBSTACULO_INICIAL,
+    VELOCIDADE_OBSTACULO_MAXIMA,
+    INTERVALO_SPAWN_CONSUMIVEL_INICIAL,
+    INTERVALO_SPAWN_CONSUMIVEL_MINIMO,
 )
 
 
@@ -110,16 +116,31 @@ def contagem_regressiva(tela, relogio, largura_tela, altura_tela, fps):
     return True
 
 
-def criar_consumivel(imagens_consumiveis):
-    # Cria um consumível aleatório em uma coluna aleatória, nascendo no topo
+def criar_consumivel(imagens_consumiveis, colunas_ocupadas=()):
+    # Cria um consumível em uma coluna livre de obstáculos próximos
     tipo = random.choice(list(imagens_consumiveis.keys()))
+    colunas_livres = [c for c in range(3) if c not in colunas_ocupadas]
+    coluna = random.choice(colunas_livres if colunas_livres else list(range(3)))
     return {
         "tipo": tipo,
         "imagem": imagens_consumiveis[tipo]["item"],
-        "coluna": random.randint(0, 2),
+        "coluna": coluna,
         "y": float(-60),
     }
 
+
+# Pontuação a partir da qual a dificuldade atinge o máximo
+_PONTOS_DIFICULDADE_MAX = 500
+
+
+def calcular_dificuldade(pontos):
+    # Retorna (velocidade_obstaculo, intervalo_spawn, intervalo_spawn_consumivel)
+    # interpolados linearmente entre os valores iniciais e máximos conforme a pontuação
+    t = limitar_valor(pontos / _PONTOS_DIFICULDADE_MAX, 0.0, 1.0)
+    velocidade = VELOCIDADE_OBSTACULO_INICIAL + (VELOCIDADE_OBSTACULO_MAXIMA  - VELOCIDADE_OBSTACULO_INICIAL) * t
+    intervalo  = INTERVALO_SPAWN_INICIAL      - (INTERVALO_SPAWN_INICIAL      - INTERVALO_SPAWN_MINIMO)       * t
+    intervalo_con = INTERVALO_SPAWN_CONSUMIVEL_INICIAL - (INTERVALO_SPAWN_CONSUMIVEL_INICIAL - INTERVALO_SPAWN_CONSUMIVEL_MINIMO) * t
+    return round(velocidade, 2), int(intervalo), int(intervalo_con)
 
 def atualizar_consumivel(consumivel):
     # Desce o consumível na tela

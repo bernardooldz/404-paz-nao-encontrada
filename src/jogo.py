@@ -14,13 +14,10 @@ from src.config import (
     FPS_ANIMACAO,
     DURACAO_VIRAR,
     TAMANHO_OBSTACULO_MAX,
-    INTERVALO_SPAWN,
     DURACAO_DANO,
     VELOCIDADE_SLOW,
-    VELOCIDADE_OBSTACULO,
     INTERVALO_PISCAR,
     PONTOS_POR_SEGUNDO,
-    INTERVALO_SPAWN_CONSUMIVEL,
     DURACAO_EFEITO,
     DURACAO_FRAME_USO,
 )
@@ -42,6 +39,7 @@ from src.funcoes import (
     rect_consumivel,
     desenhar_consumivel,
     desenhar_efeito_ativo,
+    calcular_dificuldade,
 )
 from src.sprites import (
     carregar_imagens_personagem,
@@ -230,11 +228,14 @@ def executar_jogo():
 
                 piscar_visivel = True
 
+            # Dificuldade progressiva
+            vel_obs, intervalo_spawn, intervalo_con = calcular_dificuldade(s["pontos"])
+
             # Obstáculos (slow durante dano)
-            velocidade_atual = VELOCIDADE_SLOW if em_dano else VELOCIDADE_OBSTACULO
+            velocidade_atual = VELOCIDADE_SLOW if em_dano else vel_obs
 
             s["timer_spawn"] += 1
-            if s["timer_spawn"] >= INTERVALO_SPAWN:
+            if s["timer_spawn"] >= intervalo_spawn:
                 s["timer_spawn"] = 0
                 s["obstaculos"].append(criar_obstaculo(imagens_obstaculos))
 
@@ -244,11 +245,15 @@ def executar_jogo():
                 obs for obs in s["obstaculos"] if obs["y"] < ALTURA_TELA + TAMANHO_OBSTACULO_MAX
             ]
 
-            # Consumíveis
+            # Consumíveis: spawn em colunas livres de obstáculos próximos
+            colunas_ocupadas = {
+                obs["coluna"] for obs in s["obstaculos"]
+                if obs["y"] > -80 and obs["y"] < 200
+            }
             s["timer_spawn_consumivel"] += 1
-            if s["timer_spawn_consumivel"] >= INTERVALO_SPAWN_CONSUMIVEL:
+            if s["timer_spawn_consumivel"] >= intervalo_con:
                 s["timer_spawn_consumivel"] = 0
-                s["consumiveis"].append(criar_consumivel(imagens_consumiveis))
+                s["consumiveis"].append(criar_consumivel(imagens_consumiveis, colunas_ocupadas))
 
             for con in s["consumiveis"]:
                 atualizar_consumivel(con)
