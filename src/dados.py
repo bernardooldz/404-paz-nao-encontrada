@@ -28,3 +28,13 @@ def carregar_melhor_ranking(caminho_arquivo):
             return max((int(l) for l in linhas), default=0)
     except (FileNotFoundError, ValueError):
         return 0
+
+
+def carregar_ranking(caminho_arquivo):
+    # Retorna lista de pontuações ordenadas da maior para a menor
+    try:
+        with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
+            linhas = [l.strip() for l in arquivo if l.strip()]
+            return sorted((int(l) for l in linhas), reverse=True)
+    except (FileNotFoundError, ValueError):
+        return []
