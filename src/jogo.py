@@ -56,9 +56,9 @@ from src.sprites import (
 from src.dados import salvar_recorde, carregar_recorde, salvar_ranking, carregar_melhor_ranking, carregar_ranking
 
 from assets.sons.sounds import (
+    audio_manager,
     inicializar_audio,
     preparar_mixer,
-    tocar_musica_fundo,
     tocar_som_dano,
     tocar_som_power_up,
 )
@@ -73,6 +73,7 @@ _logo         = None
 _img_personagem = None
 _imgs_obstaculos_deco = None
 _imgs_consumiveis_deco = None
+_arrastando_volume = False
 
 
 def _carregar_assets_telas():
@@ -131,6 +132,95 @@ def _desenhar_decoracao_lateral(tela):
             tela.blit(img, (margem_x, y))
         else:
             tela.blit(img, (LARGURA_TELA - margem_x - tam, y))
+
+
+def _retangulos_controle_volume():
+    slider_largura = max(90, int(LARGURA_TELA * 0.15))
+    slider_altura = 8
+    icon_tamanho = 28
+    margem_x = 20
+    margem_y = 4
+    espaco = 8
+    y_centro = margem_y + icon_tamanho // 2
+    slider = pygame.Rect(
+        LARGURA_TELA - margem_x - slider_largura,
+        y_centro - slider_altura // 2,
+        slider_largura,
+        slider_altura,
+    )
+    icone = pygame.Rect(slider.left - espaco - icon_tamanho, margem_y, icon_tamanho, icon_tamanho)
+    area_slider = slider.inflate(12, 22)
+    return icone, slider, area_slider
+
+
+def _definir_volume_pelo_mouse(x_mouse):
+    _, slider, _ = _retangulos_controle_volume()
+    proporcao = (x_mouse - slider.left) / slider.width
+    audio_manager.set_master_volume(proporcao)
+
+
+def _processar_evento_controle_volume(evento):
+    global _arrastando_volume
+
+    icone, _, area_slider = _retangulos_controle_volume()
+    if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+        if icone.collidepoint(evento.pos):
+            audio_manager.toggle_mute()
+            return True
+        if area_slider.collidepoint(evento.pos):
+            _arrastando_volume = True
+            _definir_volume_pelo_mouse(evento.pos[0])
+            return True
+
+    if evento.type == pygame.MOUSEMOTION and _arrastando_volume:
+        _definir_volume_pelo_mouse(evento.pos[0])
+        return True
+
+    if evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
+        _arrastando_volume = False
+
+    return False
+
+
+def _desenhar_icone_volume(tela, rect, ativo):
+    cor = VERDE if ativo else (210, 70, 70)
+    x, y = rect.topleft
+    corpo = pygame.Rect(x + 3, y + 10, 7, 9)
+    pygame.draw.rect(tela, cor, corpo)
+    pygame.draw.polygon(tela, cor, [
+        (x + 10, y + 9),
+        (x + 18, y + 4),
+        (x + 18, y + 24),
+        (x + 10, y + 19),
+    ])
+
+    if ativo:
+        pygame.draw.arc(tela, cor, (x + 14, y + 8, 12, 12), -0.9, 0.9, 2)
+        pygame.draw.arc(tela, cor, (x + 11, y + 4, 20, 20), -0.8, 0.8, 2)
+    else:
+        pygame.draw.line(tela, cor, (x + 21, y + 9), (x + 27, y + 19), 3)
+        pygame.draw.line(tela, cor, (x + 27, y + 9), (x + 21, y + 19), 3)
+
+
+def _desenhar_controle_volume(tela):
+    icone, slider, _ = _retangulos_controle_volume()
+    ativo = not audio_manager.is_muted
+    volume = audio_manager.master_music_volume
+
+    painel = pygame.Surface((icone.width + 8 + slider.width + 14, 38), pygame.SRCALPHA)
+    painel.fill((0, 0, 0, 145))
+    tela.blit(painel, (icone.left - 7, 1))
+
+    _desenhar_icone_volume(tela, icone, ativo)
+
+    pygame.draw.rect(tela, (60, 60, 60), slider, border_radius=4)
+    preenchimento = pygame.Rect(slider.left, slider.top, int(slider.width * volume), slider.height)
+    if preenchimento.width > 0:
+        pygame.draw.rect(tela, VERDE if ativo else CINZA, preenchimento, border_radius=4)
+
+    x_botao = slider.left + int(slider.width * volume)
+    pygame.draw.circle(tela, BRANCO, (x_botao, slider.centery), 7)
+    pygame.draw.circle(tela, (30, 30, 30), (x_botao, slider.centery), 7, 1)
 
 
 def tela_tutorial(tela, relogio, colunas_matrix, fonte_matrix):
@@ -240,6 +330,7 @@ def tela_tutorial(tela, relogio, colunas_matrix, fonte_matrix):
     while True:
         relogio.tick(FPS)
         for evento in pygame.event.get():
+            _processar_evento_controle_volume(evento)
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
@@ -319,6 +410,7 @@ def tela_tutorial(tela, relogio, colunas_matrix, fonte_matrix):
         txt_av = f_nav.render(avancar, True, CINZA)
         tela.blit(txt_av, txt_av.get_rect(right=int(LARGURA_TELA * 0.92), top=int(ALTURA_TELA * 0.94)))
 
+        _desenhar_controle_volume(tela)
         pygame.display.flip()
 
 
@@ -336,6 +428,7 @@ def tela_historico(tela, relogio, colunas_matrix, fonte_matrix):
     while True:
         relogio.tick(FPS)
         for evento in pygame.event.get():
+            _processar_evento_controle_volume(evento)
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
@@ -376,6 +469,7 @@ def tela_historico(tela, relogio, colunas_matrix, fonte_matrix):
 
         txt_v = fonte_item.render("H / ESC  para  voltar", True, CINZA)
         tela.blit(txt_v, txt_v.get_rect(centerx=cx, bottom=ALTURA_TELA - int(ALTURA_TELA * 0.03)))
+        _desenhar_controle_volume(tela)
         pygame.display.flip()
 
 
@@ -389,6 +483,7 @@ def tela_inicial(tela, relogio, colunas_matrix, fonte_matrix):
     while True:
         relogio.tick(FPS)
         for evento in pygame.event.get():
+            _processar_evento_controle_volume(evento)
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
@@ -444,6 +539,7 @@ def tela_inicial(tela, relogio, colunas_matrix, fonte_matrix):
             tela.blit(t, t.get_rect(centerx=cx, top=y))
             y += int(ALTURA_TELA * 0.055)
 
+        _desenhar_controle_volume(tela)
         pygame.display.flip()
 
 
@@ -460,6 +556,7 @@ def tela_pausada(tela, relogio, colunas_matrix, fonte_matrix):
     while True:
         relogio.tick(FPS)
         for evento in pygame.event.get():
+            _processar_evento_controle_volume(evento)
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
@@ -475,6 +572,7 @@ def tela_pausada(tela, relogio, colunas_matrix, fonte_matrix):
             (fonte_pequena.render("ESC  para  sair",        True, (200, 80, 80)), cy + int(ALTURA_TELA * 0.07)),
         ]:
             tela.blit(texto, texto.get_rect(centerx=cx, top=y))
+        _desenhar_controle_volume(tela)
         pygame.display.flip()
 
 
@@ -493,6 +591,7 @@ def tela_final(tela, relogio, vitoria, pontos, recorde, colunas_matrix, fonte_ma
     while esperando:
         relogio.tick(FPS)
         for evento in pygame.event.get():
+            _processar_evento_controle_volume(evento)
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
@@ -517,6 +616,7 @@ def tela_final(tela, relogio, vitoria, pontos, recorde, colunas_matrix, fonte_ma
         ]:
             tela.blit(texto, texto.get_rect(centerx=cx, top=y))
 
+        _desenhar_controle_volume(tela)
         pygame.display.flip()
 
     return False
@@ -597,9 +697,10 @@ def executar_jogo():
     colunas_matrix = criar_estado_matrix()
     _carregar_assets_telas()
 
-    tocar_musica_fundo()
+    audio_manager.play_menu_music()
 
     if not tela_inicial(tela, relogio, colunas_matrix, fonte_matrix):
+        audio_manager.stop_all()
         pygame.quit()
         return
 
@@ -608,6 +709,7 @@ def executar_jogo():
         s = _estado_inicial()
         recorde_anterior = carregar_melhor_ranking(CAMINHO_RANKING)
 
+        audio_manager.play_game_music(restart=True)
         if not contagem_regressiva(tela, relogio, LARGURA_TELA, ALTURA_TELA, FPS):
             break
 
@@ -617,6 +719,7 @@ def executar_jogo():
             relogio.tick(FPS)
 
             for evento in pygame.event.get():
+                _processar_evento_controle_volume(evento)
                 if evento.type == pygame.QUIT:
                     rodando = False
                     jogando = False
@@ -625,12 +728,16 @@ def executar_jogo():
                         rodando = False
                         jogando = False
                     elif evento.key == pygame.K_SPACE:
+                        audio_manager.enter_pause()
                         pausado = True
 
             if pausado:
                 if not tela_pausada(tela, relogio, colunas_matrix, fonte_matrix):
+                    audio_manager.stop_all()
                     rodando = False
                     jogando = False
+                else:
+                    audio_manager.resume_after_pause()
                 pausado = False
                 continue
 
@@ -794,6 +901,7 @@ def executar_jogo():
 
             desenhar_vidas(tela, s["vidas"], coracao_cheio, coracao_vazio)
             desenhar_pontuacao(tela, s["pontos"], LARGURA_TELA)
+            _desenhar_controle_volume(tela)
             pygame.display.flip()
 
         # Fim de partida
@@ -808,6 +916,11 @@ def executar_jogo():
         if vitoria:
             salvar_recorde(CAMINHO_RECORDE, pontos_finais)
 
+        if vitoria:
+            audio_manager.play_victory_music()
+        else:
+            audio_manager.play_defeat_music()
         jogando = tela_final(tela, relogio, vitoria, pontos_finais, melhor, colunas_matrix, fonte_matrix)
 
+    audio_manager.stop_all()
     pygame.quit()

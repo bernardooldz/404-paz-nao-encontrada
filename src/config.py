@@ -53,9 +53,6 @@ COR_EFEITO_CAFE    = (255, 200,  50,  35)  # dourado
 COR_EFEITO_MONSTER = ( 80, 220,  80,  35)  # verde
 COR_EFEITO_SPOTIFY = (140,  60, 220,  35)  # roxo
 
-# Audio
-VOLUME_MUSICA = 0.45
-VOLUME_EFEITOS = 0.70
 # Efeito Matrix (fundo)
 COR_MATRIX_BRILHANTE = (140, 255, 140)  # caractere mais recente
 COR_MATRIX_MEDIO     = (  0, 160,   0)  # caracteres do meio
