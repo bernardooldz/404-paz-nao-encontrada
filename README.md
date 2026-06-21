@@ -1,3 +1,5 @@
+![Logo do jogo](./assets/imagens/sistema/banner-404pne.png)
+
 # 404: Paz Nao Encontrada
 
 Projeto final da disciplina de Introducao a Algoritmos/Programacao, desenvolvido em Python com Pygame.

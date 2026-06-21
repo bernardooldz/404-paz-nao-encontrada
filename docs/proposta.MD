@@ -12,7 +12,7 @@
 
 ## 3. Tipo de jogo
 
-Jogo arcade de sobrevivencia em tres pistas, com movimentacao lateral, obstaculos, consumiveis e pontuacao por tempo.
+Corrida simples com obstáculos.
 
 ## 4. Descricao geral do jogo
 
