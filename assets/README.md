@@ -2,14 +2,17 @@
 
 Esta pasta centraliza os recursos visuais e sonoros do jogo.
 
-## Organização
+## Organizacao
 
-- `imagens/`: sprites, fundos e ícones.
-- `sons/`: efeitos sonoros e músicas.
-- `fontes/`: fontes tipográficas customizadas.
+- `imagens/`: sprites do personagem, obstaculos, consumiveis, coracoes e logo.
+- `sons/`: trilhas, efeitos sonoros e modulo de gerenciamento de audio.
+- `fontes/`: espaco reservado para fontes customizadas.
 
-## Boas práticas
+## Uso no jogo
 
-- Use nomes de arquivo descritivos e sem espaços.
-- Prefira formatos leves (`.png`, `.ogg`, `.wav`, `.ttf`).
-- Registre a origem dos assets utilizados (quando externos).
+Os assets sao carregados principalmente por:
+
+- `src/sprites.py`, para sprites usados durante a partida.
+- `src/jogo.py`, para logo, imagens decorativas, tutorial e telas estaticas.
+- `assets/sons/sounds.py`, para musica de menu, jogo, pausa, vitoria, derrota e efeitos.
+

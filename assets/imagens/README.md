@@ -1,13 +1,15 @@
 # Imagens
 
-Pasta destinada a sprites, fundos, icones e outros elementos visuais.
+Pasta de recursos visuais do jogo.
 
-## Conteudo atual
+## Organizacao atual
 
-- `spritesheet.bmp`: spritesheet base do template.
+- `personagem-principal/`: frames do personagem andando, virando, tomando dano e usando consumiveis.
+- `obstaculos/`: imagens dos obstaculos que descem pelas pistas.
+- `consumiveis/`: imagens de cafe, Monster e Spotify.
+- `sistema/`: logo, coracoes e sprites usados em telas auxiliares.
+- Arquivos `.png` na raiz: spritesheets de referencia do projeto.
 
-## Recomendações
+## Observacoes
 
-- Separe imagens por tema quando o projeto crescer.
-- Mantenha dimensoes e padroes consistentes para facilitar colisao e animacao.
-- Prefira formatos com transparencia quando necessario (ex.: `.png`).
+`src/sprites.py` carrega os assets principais da partida e aplica os tamanhos definidos em `src/config.py`. Algumas telas tambem carregam imagens diretamente em `src/jogo.py`.

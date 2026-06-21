@@ -1,97 +1,111 @@
 # Proposta Inicial do Jogo
 
-Este documento deve ser preenchido pelo grupo na Semana 1 do projeto.
+## 1. Nome do jogo
 
-A proposta deve apresentar uma ideia simples, clara e viável para ser desenvolvida com Python e Pygame dentro do prazo disponível.
-
-## 1. Nome provisório do jogo
-
-404: Paz Não Encontrada
+404: Paz Nao Encontrada
 
 ## 2. Integrantes do grupo
 
-- Nome 1: Bernardo Diniz
-- Nome 2: Daniel Heber de Souza Godinho
+- Bernardo Diniz
+- Daniel Heber de Souza Godinho
+- Thiago de Castro
 
 ## 3. Tipo de jogo
 
-Nave desviando de meteoros
+Jogo arcade de sobrevivencia em tres pistas, com movimentacao lateral, obstaculos, consumiveis e pontuacao por tempo.
 
-## 4. Descrição geral do jogo
+## 4. Descricao geral do jogo
 
-O jogo "404: Paz Não Encontrada" é um jogo de sobrevivência com temática de programação. O jogador controla um desenvolvedor que tenta encontrar alguns momentos de paz após um longo dia de trabalho. Durante a partida, diversos obstáculos relacionados ao cotidiano da programação caem pela tela, como bugs, erros de sintaxe, conflitos de merge e deadlines. O objetivo é desviar desses obstáculos, coletar itens úteis e sobreviver o maior tempo possível.
+O jogo "404: Paz Nao Encontrada" tem tematica de programacao. O jogador controla um desenvolvedor tentando encontrar paz depois de um longo dia de trabalho, enquanto problemas do cotidiano de software descem pela tela.
+
+Durante a partida, o jogador deve alternar entre tres pistas para desviar de obstaculos como bugs, conflitos de merge, codigo legado, dependencias quebradas e notificacoes. Consumiveis aparecem ocasionalmente e oferecem vantagens temporarias.
 
 ## 5. Objetivo do jogador
 
-Sobreviver o maior tempo possível, desviando dos obstáculos e acumulando pontos. O jogador deverá alcançar uma pontuação superior ao seu último recorde para finalmente encontrar a paz e concluir o jogo.
+Sobreviver o maior tempo possivel, acumular pontos e superar o recorde anterior. Quando a pontuacao final passa o melhor resultado salvo antes da partida, o jogo exibe a mensagem de vitoria "200 OK: Paz Encontrada!".
 
 ## 6. Regras principais
 
-- Regra 1: O jogador inicia a partida com 3 vidas.
-- Regra 2: Cada obstáculo atingido remove 1 vida.
-- Regra 3: Itens especiais podem conceder pontos extras ou recuperar vidas.
-- Regra 4: A pontuação aumenta conforme o tempo de sobrevivência.
-- Regra 5: O jogador vence ao alcançar uma pontuação superior ao seu último recorde ou perde ao ficar sem vidas.
+- O jogador inicia cada partida com 3 vidas.
+- Cada colisao com obstaculo remove 1 vida.
+- A pontuacao aumenta em 10 pontos por segundo.
+- O consumivel Cafe restaura 1 vida, ate o maximo de 3.
+- O consumivel Monster dobra a pontuacao recebida por tempo limitado.
+- O consumivel Spotify concede invencibilidade por tempo limitado.
+- Apos tomar dano, o jogador fica temporariamente invencivel e os obstaculos desaceleram por alguns segundos.
+- A dificuldade aumenta conforme a pontuacao: obstaculos ficam mais rapidos e aparecem com maior frequencia.
+- A partida termina quando as vidas chegam a zero.
 
-## 7. Condição de vitória
+## 7. Condicao de vitoria
 
-O jogador vence ao atingir uma pontuação superior ao seu último recorde, representando o momento em que finalmente encontra a paz. Ao vencer, será exibida uma mensagem indicando "200 OK: Paz Encontrada".
+O jogador vence quando termina uma partida com pontuacao maior que o recorde existente antes daquela partida. A tela final mostra "200 OK: Paz Encontrada!".
 
-## 8. Condição de derrota ou encerramento
+## 8. Condicao de derrota ou encerramento
 
-A partida termina quando o jogador perde todas as suas vidas ao colidir com obstáculos. Nesse momento será exibida a mensagem "404: Paz Não Encontrada".
+A partida termina quando o jogador perde todas as vidas ao colidir com obstaculos. Se a pontuacao final nao superar o recorde anterior, a tela final mostra "404: Paz Nao Encontrada".
 
-## 9. Elementos previstos no jogo
+O jogador tambem pode encerrar o jogo com `ESC`.
 
-## Jogador ou elemento principal
+## 9. Elementos do jogo
 
-Um desenvolvedor representado por um personagem simples controlado pelo teclado, que pode se mover horizontalmente pela tela.
+## Jogador
 
-## Obstáculos, inimigos ou desafios
+Um desenvolvedor representado por sprites animados, movendo-se entre tres pistas com o teclado.
 
-Bugs, erros de sintaxe, conflitos de merge, reuniões inesperadas e deadlines aparecerão aleatoriamente e deverão ser evitados.
+## Obstaculos
 
-## Itens, alvos ou objetos de interação
+Imagens relacionadas a problemas de desenvolvimento, como bug, conflito de merge, codigo legado, dependencias quebradas e Slack. Eles surgem no topo da tela, descem pelas pistas e aumentam de tamanho visualmente conforme se aproximam.
 
-Itens especiais como café, testes automatizados e ChatGPT poderão aparecer durante a partida oferecendo benefícios ao jogador.
+## Consumiveis
 
-## Pontuação, vidas, tempo ou progresso
+- Cafe: recupera vida.
+- Monster: ativa multiplicador de pontos.
+- Spotify: ativa invencibilidade.
 
-O jogador começa com 3 vidas. A pontuação aumenta conforme o tempo de sobrevivência e pela coleta de itens especiais. O progresso é medido pela quantidade de pontos acumulados até atingir uma pontuação superior ao seu último recorde.
+## Pontuacao, vidas e progresso
 
-## 10. Controles previstos
+O progresso e medido pela pontuacao acumulada e pelo historico de ranking salvo em `data/ranking.txt`. O jogo tambem salva recorde em `data/recorde.txt`.
 
-- Seta para esquerda ou a tecla "a": mover para a esquerda
-- Seta para direita ou a tecla "d": mover para a direita
-- Espaço: iniciar/reiniciar a partida
-- ESC: sair do jogo
+## 10. Controles
 
-## 11. Organização inicial do código
+- `A` ou seta para esquerda: mover para a esquerda.
+- `D` ou seta para direita: mover para a direita.
+- `Espaco`: iniciar partida, pausar, retomar ou jogar novamente.
+- `T`: abrir tutorial na tela inicial.
+- `H`: abrir historico na tela inicial.
+- `ESC`: voltar, sair da tela atual ou encerrar o jogo.
+- Mouse no controle de volume: ajustar volume ou alternar mudo.
 
-- `main.py`: inicia o jogo;
-- `src/jogo.py`: contém o loop principal;
-- `src/config.py`: guarda configurações como tamanho da tela e cores;
-- `src/funcoes.py`: contém funções auxiliares;
-- `src/dados.py`: contém funções de leitura e escrita de arquivos.
+## 11. Organizacao do codigo
 
-## 12. Recursos externos previstos
+- `main.py`: ponto de entrada da aplicacao.
+- `src/jogo.py`: telas, loop principal, eventos, renderizacao, regras de partida e integracao com audio/dados.
+- `src/config.py`: constantes globais, caminhos, tamanhos, FPS, cores e parametros de dificuldade.
+- `src/funcoes.py`: funcoes auxiliares de pontuacao, vidas, colisao, obstaculos, consumiveis, HUD e fundo Matrix.
+- `src/sprites.py`: carregamento e redimensionamento de sprites.
+- `src/dados.py`: leitura e escrita de recorde/ranking.
+- `assets/sons/sounds.py`: gerenciamento de musicas, efeitos, pausa, volume e mudo.
 
-- imagens obtidas de banco gratuito;
-- sons gratuitos;
-- fonte personalizada.
+## 12. Recursos externos
 
-## 13. Principais dificuldades esperadas
+O projeto utiliza imagens e sons em `assets/`. As musicas e efeitos devem ter origem/licenca documentada quando forem externos. No estado atual, o jogo usa fontes do sistema via Pygame.
 
-- Dificuldade 1: Implementação do sistema de colisão entre jogador e obstáculos.
-- Dificuldade 2: Criação do sistema de geração aleatória de obstáculos e itens.
-- Dificuldade 3: Organização do código em módulos e implementação do sistema de pontuação e ranking.
+## 13. Principais dificuldades
 
-## 14. Escopo mínimo para a entrega final
+- Implementar colisao consistente entre jogador, obstaculos e consumiveis.
+- Controlar spawn aleatorio sem gerar situacoes injustas entre obstaculos e consumiveis.
+- Organizar estados de jogo, telas, pausa, tutorial, historico e tela final.
+- Integrar audio de forma robusta, permitindo que o jogo continue mesmo sem mixer ou arquivo de som.
+- Balancear dificuldade progressiva e efeitos temporarios.
 
-A versão mínima do jogo terá um personagem controlado pelo teclado, obstáculos surgindo aleatoriamente, sistema de vidas, sistema de pontuação, tela de vitória ao alcançar uma pontuação superior ao seu último recorde e tela de derrota quando as vidas chegarem a zero.
+## 14. Escopo minimo para entrega final
 
-## 15. Possíveis melhorias, caso haja tempo
+A versao minima inclui personagem controlado pelo teclado, tres pistas, obstaculos aleatorios, sistema de vidas, pontuacao por tempo, consumiveis, recorde/ranking, tela inicial, pausa, tutorial, historico, tela de vitoria e tela de derrota.
 
-- Melhoria 1: Aumento gradual da dificuldade com obstáculos mais rápidos conforme a pontuação aumenta.
-- Melhoria 2: Implementação de itens especiais com efeitos temporários, como invencibilidade por alguns segundos ou redução da velocidade dos obstáculos.
-- Melhoria 3: Usuário poder mudar o visual de seu personagem.
+## 15. Possiveis melhorias
+
+- Tela de configuracoes com volume separado para musica e efeitos.
+- Selecao visual de personagem.
+- Novos tipos de obstaculos e consumiveis.
+- Ranking com nome do jogador.
+- Ajustes finos de balanceamento por dificuldade.
